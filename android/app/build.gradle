@@ -132,11 +132,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.purchases"
+        applicationId 'com.purchases.test'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     splits {
         abi {
@@ -164,6 +164,13 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    flavorDimensions "appstore"
+    productFlavors{
+        googlePlay{
+            dimension "appstore"
+            missingDimensionStrategy "store", "play"
         }
     }
 

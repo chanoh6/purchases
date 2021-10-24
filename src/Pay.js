@@ -102,11 +102,18 @@ const PayView = styled.View`
   margin-top: 16px;
 `;
 
-const PayTextView = styled.View`
+const PayTextView = styled.TouchableOpacity`
   width: 48%;
   padding: 30px 16px;
   background-color: #495057;
   border-radius: 16px;
+  ${({ active }) =>
+    active &&
+    `
+    border: 5px;
+    border-color: #fff;
+    padding: 25px 11px;
+  `}
 `;
 
 const PayTitText = styled.Text`
@@ -181,183 +188,237 @@ const ButtonTit = styled.Text`
   color: #fff;
 `;
 
+function dateAdd(addDay) {
+  var nowDate = new Date();
+  var addDate = nowDate.getTime() + (addDay * 24 * 60 * 60 * 1000);
+
+  nowDate.setTime(addDate);
+
+  var month = nowDate.getMonth() + 1;
+  var date = nowDate.getDate();
+
+  if (month < 10) {
+    month = "0" + month;
+  };
+
+  if (date < 10) {
+    date = "0" + date;
+  };
+
+  return month + "/" + date;
+};
+
 const Pay = ({ navigation }) => {
-    const componentDidMount = async (): void => {
-        try {
-            await RNIap.initConnection();
-            if (Platform.OS === 'android') {
-                await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
-            } else {
-                await RNIap.clearTransactionIOS();
-            }
-        } catch (err) {
-            console.warn(err.code, err.message);
-        }
-
-        purchaseUpdateSubscription = purchaseUpdatedListener(
-            async (purchase: InAppPurchase | SubscriptionPurchase) => {
-                console.info('purchase', purchase);
-                const receipt = purchase.transactionReceipt
-                    ? purchase.transactionReceipt
-                    : purchase.originalJson;
-                console.info(receipt);
-                if (receipt) {
-                    try {
-                        const ackResult = await finishTransaction(purchase);
-                        console.info('ackResult', ackResult);
-                    } catch (ackErr) {
-                        console.warn('ackErr', ackErr);
-                    }
-
-                    this.setState({receipt}, () => this.goNext());
-                }
-            },
-        );
-
-        purchaseErrorSubscription = purchaseErrorListener(
-            (error: PurchaseError) => {
-            console.log('purchaseErrorListener', error);
-            Alert.alert('purchase error', JSON.stringify(error));
-            },
-        );
+  const componentDidMount = async (): void => {
+    try {
+      await RNIap.initConnection();
+      if (Platform.OS === 'android') {
+        await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+      } else {
+        await RNIap.clearTransactionIOS();
+      }
+    } catch (err) {
+      console.warn(err.code, err.message);
     }
 
-    const componentWillUnmount = (): void => {
-        if (purchaseUpdateSubscription) {
-            purchaseUpdateSubscription.remove();
-            purchaseUpdateSubscription = null;
+    purchaseUpdateSubscription = purchaseUpdatedListener(
+      async (purchase: InAppPurchase | SubscriptionPurchase) => {
+        console.info('purchase', purchase);
+        const receipt = purchase.transactionReceipt
+          ? purchase.transactionReceipt
+          : purchase.originalJson;
+        console.info(receipt);
+        if (receipt) {
+          try {
+            const ackResult = await finishTransaction(purchase);
+            console.info('ackResult', ackResult);
+          } catch (ackErr) {
+            console.warn('ackErr', ackErr);
+          }
+
+          this.setState({receipt}, () => this.goNext());
         }
-        if (purchaseErrorSubscription) {
-            purchaseErrorSubscription.remove();
-            purchaseErrorSubscription = null;
-        }
-        // RNIap.endConnection();
-    }
-
-    goNext = (): void => {
-        Alert.alert('Receipt', this.state.receipt);
-    };
-
-    getItems = async (): void => {
-        try {
-            const products = await RNIap.getProducts(itemSkus);
-            // const products = await RNIap.getSubscriptions(itemSkus);
-            console.log('Products', products);
-            this.setState({productList: products});
-        } catch (err) {
-            console.warn(err.code, err.message);
-        }
-    };
-
-    getSubscriptions = async (): void => {
-        try {
-            const products = await RNIap.getSubscriptions(itemSubs);
-            console.log('Products', products);
-            this.setState({productList: products});
-        } catch (err) {
-            console.warn(err.code, err.message);
-        }
-    };
-
-    getAvailablePurchases = async (): void => {
-        try {
-            console.info(
-            'Get available purchases (non-consumable or unconsumed consumable)',
-            );
-            const purchases = await RNIap.getAvailablePurchases();
-            console.info('Available purchases :: ', purchases);
-            if (purchases && purchases.length > 0) {
-            this.setState({
-                availableItemsMessage: `Got ${purchases.length} items.`,
-                receipt: purchases[0].transactionReceipt,
-            });
-            }
-        } catch (err) {
-            console.warn(err.code, err.message);
-            Alert.alert(err.message);
-        }
-    };
-
-    // Version 3 apis
-    requestPurchase = async (sku): void => {
-        try {
-            RNIap.requestPurchase(sku);
-        } catch (err) {
-            console.warn(err.code, err.message);
-        }
-    };
-
-    requestSubscription = async (sku): void => {
-        try {
-            RNIap.requestSubscription(sku);
-        } catch (err) {
-            Alert.alert(err.message);
-        }
-    };
-
-    // const {productList, receipt, availableItemsMessage} = this.state;
-    // const receipt100 = receipt.substring(0, 100);
-    return (
-        <Container>
-            <StatusBar backgroundColor={'transparent'} translucent={true} barStyle="light-content" />
-
-            <BackgroundImg source={require("../assets/backgroundImg.jpg")}>
-                <CloseIcon onPress={() => navigation.goBack()}>
-                    <Image source={require("../assets/icon/close_white.png")} />
-                </CloseIcon>
-
-                <TextView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                    <TitleText>모든 콘텐츠를{"\n"}제한 없이 이용하세요{"\n"}7일 간 무료입니다!</TitleText>
-
-                    <SubTitView>
-                        <Image source={require("../assets/icon/check_white.png")} />
-                        <SubTitText>휴식과 집중을 도와주는 사운드 콘텐츠</SubTitText>
-                    </SubTitView>
-
-                    <SubTitView>
-                        <Image source={require("../assets/icon/check_white.png")} />
-                        <SubTitText>일상과 삶을 돌아볼 수 있는 클래스</SubTitText>
-                    </SubTitView>
-
-                    <SubTitView>
-                        <Image source={require("../assets/icon/check_white.png")} />
-                        <SubTitText>매주 새로운 콘텐츠가 업데이트 됩니다</SubTitText>
-                    </SubTitView>
-
-                    <PayView>
-                        <PayTextView>
-                            <PayTitText>1년</PayTitText>
-
-                            <SubPayTitText>무료 체험 7일 이후</SubPayTitText>
-                            
-                            <PriceView>
-                                <PriceText>￦ 47,000</PriceText>
-                                <SubPriceText>(￦3,916원/월)</SubPriceText>
-                            </PriceView>
-                        </PayTextView>
-
-                        <PayTextView>
-                            <PayTitText>1개월</PayTitText>
-
-                            <SubPayTitText>무료 체험 3일 이후</SubPayTitText>
-                            
-                            <PriceView>
-                                <PriceText>￦ 7,900</PriceText>
-                            </PriceView>
-                        </PayTextView>
-                    </PayView>
-
-                    <InfoText>10월 20일 체험 만료 전까지 언제든 해지할 수 있어요</InfoText>
-
-                    <SubInfoText>체험 기간이 종료되기 최소 24시간 전에 자동 갱신을 끄지 않으면 멤버십 구독이 자동으로 갱신 됩니다.</SubInfoText>
-                </TextView>
-
-                <PayButton onPress={ (): void => this.requestSubscription(product.productId) }>
-                    <ButtonTit>무료 체험 및 구독 시작하기</ButtonTit>
-                </PayButton>
-            </BackgroundImg>
-        </Container>
+      },
     );
+
+    purchaseErrorSubscription = purchaseErrorListener(
+      (error: PurchaseError) => {
+        console.log('purchaseErrorListener', error);
+        Alert.alert('purchase error', JSON.stringify(error));
+      },
+    );
+  }
+
+  const componentWillUnmount = (): void => {
+    if (purchaseUpdateSubscription) {
+      purchaseUpdateSubscription.remove();
+      purchaseUpdateSubscription = null;
+    }
+    if (purchaseErrorSubscription) {
+      purchaseErrorSubscription.remove();
+      purchaseErrorSubscription = null;
+    }
+    // RNIap.endConnection();
+  }
+
+  goNext = (): void => {
+    Alert.alert('Receipt', this.state.receipt);
+  };
+
+  getItems = async (): void => {
+    try {
+      const products = await RNIap.getProducts(itemSkus);
+      // const products = await RNIap.getSubscriptions(itemSkus);
+      console.log('Products', products);
+      this.setState({productList: products});
+    } catch (err) {
+      console.warn(err.code, err.message);
+    }
+  };
+
+  getSubscriptions = async (): void => {
+    try {
+      const products = await RNIap.getSubscriptions(itemSubs);
+      console.log('Products', products);
+      this.setState({productList: products});
+    } catch (err) {
+      console.warn(err.code, err.message);
+    }
+  };
+
+  getAvailablePurchases = async (): void => {
+    try {
+      console.info(
+        'Get available purchases (non-consumable or unconsumed consumable)',
+      );
+      const purchases = await RNIap.getAvailablePurchases();
+      console.info('Available purchases :: ', purchases);
+      if (purchases && purchases.length > 0) {
+        this.setState({
+            availableItemsMessage: `Got ${purchases.length} items.`,
+            receipt: purchases[0].transactionReceipt,
+        });
+      }
+    } catch (err) {
+      console.warn(err.code, err.message);
+      Alert.alert(err.message);
+    }
+  };
+
+  // Version 3 apis
+  requestPurchase = async (sku): void => {
+    try {
+      RNIap.requestPurchase(sku);
+    } catch (err) {
+      console.warn(err.code, err.message);
+    }
+  };
+
+  requestSubscription = async (sku): void => {
+    try {
+      RNIap.requestSubscription(sku);
+    } catch (err) {
+      Alert.alert(err.message);
+    }
+  };
+
+  // const {productList, receipt, availableItemsMessage} = this.state;
+  // const receipt100 = receipt.substring(0, 100);
+
+  // 상품 목록
+  const products = [
+    {
+      id: 0,
+      title: '1년',
+      day: 7,
+      price: '￦ 47,000',
+      monthPrice: '(￦3,916원/월)'
+    },
+    {
+      id: 1,
+      title: '1개월',
+      day: 3,
+      price: '￦ 7,900',
+      monthPrice: '(￦3,916원/월)'
+    }
+  ];
+
+  const [active, setActive] = useState(products[0].id);
+
+  return (
+    <Container>
+      <StatusBar backgroundColor={'transparent'} translucent={true} barStyle="light-content" />
+
+      <BackgroundImg source={require("../assets/backgroundImg.jpg")}>
+        <CloseIcon onPress={() => navigation.goBack()}>
+            <Image source={require("../assets/icon/close_white.png")} />
+        </CloseIcon>
+
+        <TextView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+          <TitleText>모든 콘텐츠를{"\n"}제한 없이 이용하세요{"\n"}{products[active].day}일 간 무료입니다!</TitleText>
+
+          <SubTitView>
+            <Image source={require("../assets/icon/check_white.png")} />
+            <SubTitText>휴식과 집중을 도와주는 사운드 콘텐츠</SubTitText>
+          </SubTitView>
+
+          <SubTitView>
+            <Image source={require("../assets/icon/check_white.png")} />
+            <SubTitText>일상과 삶을 돌아볼 수 있는 클래스</SubTitText>
+          </SubTitView>
+
+          <SubTitView>
+            <Image source={require("../assets/icon/check_white.png")} />
+            <SubTitText>매주 새로운 콘텐츠가 업데이트 됩니다</SubTitText>
+          </SubTitView>
+
+          <PayView>
+            {/* <PayTextView>
+              <PayTitText>1년</PayTitText>
+
+              <SubPayTitText>무료 체험 7일 이후</SubPayTitText>
+              
+              <PriceView>
+                  <PriceText>￦ 47,000</PriceText>
+                  <SubPriceText>(￦3,916원/월)</SubPriceText>
+              </PriceView>
+            </PayTextView>
+
+            <PayTextView>
+              <PayTitText>1개월</PayTitText>
+
+              <SubPayTitText>무료 체험 3일 이후</SubPayTitText>
+              
+              <PriceView>
+                  <PriceText>￦ 7,900</PriceText>
+              </PriceView>
+            </PayTextView> */}
+
+            {products.map(product => (
+              <PayTextView activeOpacity={1} key={product.id} active={active === product.id} onPress={() => setActive(product.id)}>
+                <PayTitText>{product.title}</PayTitText>
+
+                <SubPayTitText>무료 체험 {product.day}일 이후</SubPayTitText>
+                
+                <PriceView>
+                    <PriceText>{product.price}</PriceText>
+                    <SubPriceText>{product.monthPrice}</SubPriceText>
+                </PriceView>
+              </PayTextView>
+            ))}
+          </PayView>
+
+          <InfoText>{dateAdd(products[active].day).slice(0, 2)}월 {dateAdd(products[active].day).slice(3, 5)-1}일 체험 만료 전까지 언제든 해지할 수 있어요</InfoText>
+
+          <SubInfoText>체험 기간이 종료되기 최소 24시간 전에 자동 갱신을 끄지 않으면 멤버십 구독이 자동으로 갱신 됩니다.</SubInfoText>
+        </TextView>
+
+        <PayButton onPress={ (): void => this.requestSubscription(product.productId) }>
+          <ButtonTit>무료 체험 및 구독 시작하기</ButtonTit>
+        </PayButton>
+      </BackgroundImg>
+    </Container>
+  );
 };
 
 export default Pay;

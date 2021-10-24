@@ -29,5 +29,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.0"
   },
-  "private": true
+  "private": true,
+  "name": "purchases",
+  "version": "1.0.0"
 }

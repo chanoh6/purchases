@@ -5,10 +5,11 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
-  },
-  "android": {
-    "versionCode": 1
+    ],
+    "android": {
+      "package": "com.purchasesTest.test",
+      "versionCode": 1
+    }
   },
   "name": "purchases"
 }
