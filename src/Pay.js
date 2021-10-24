@@ -13,6 +13,7 @@ import RNIap, {
   purchaseUpdatedListener,
 } from 'react-native-iap';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const itemSkus = Platform.select({
   ios: [
@@ -188,6 +189,16 @@ const ButtonTit = styled.Text`
   color: #fff;
 `;
 
+const styles = StyleSheet.create({
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '100%',
+  },
+});
+
 function dateAdd(addDay) {
   var nowDate = new Date();
   var addDate = nowDate.getTime() + (addDay * 24 * 60 * 60 * 1000);
@@ -261,11 +272,11 @@ const Pay = ({ navigation }) => {
     // RNIap.endConnection();
   }
 
-  goNext = (): void => {
+  const goNext = (): void => {
     Alert.alert('Receipt', this.state.receipt);
   };
 
-  getItems = async (): void => {
+  const getItems = async (): void => {
     try {
       const products = await RNIap.getProducts(itemSkus);
       // const products = await RNIap.getSubscriptions(itemSkus);
@@ -276,7 +287,7 @@ const Pay = ({ navigation }) => {
     }
   };
 
-  getSubscriptions = async (): void => {
+  const getSubscriptions = async (): void => {
     try {
       const products = await RNIap.getSubscriptions(itemSubs);
       console.log('Products', products);
@@ -286,7 +297,7 @@ const Pay = ({ navigation }) => {
     }
   };
 
-  getAvailablePurchases = async (): void => {
+  const getAvailablePurchases = async (): void => {
     try {
       console.info(
         'Get available purchases (non-consumable or unconsumed consumable)',
@@ -306,7 +317,7 @@ const Pay = ({ navigation }) => {
   };
 
   // Version 3 apis
-  requestPurchase = async (sku): void => {
+  const requestPurchase = async (sku): void => {
     try {
       RNIap.requestPurchase(sku);
     } catch (err) {
@@ -314,7 +325,7 @@ const Pay = ({ navigation }) => {
     }
   };
 
-  requestSubscription = async (sku): void => {
+  const requestSubscription = async (sku): void => {
     try {
       RNIap.requestSubscription(sku);
     } catch (err) {
@@ -350,6 +361,11 @@ const Pay = ({ navigation }) => {
       <StatusBar backgroundColor={'transparent'} translucent={true} barStyle="light-content" />
 
       <BackgroundImg source={require("../assets/backgroundImg.jpg")}>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 1)']}
+          style={styles.background}
+        />
         <CloseIcon onPress={() => navigation.goBack()}>
             <Image source={require("../assets/icon/close_white.png")} />
         </CloseIcon>
@@ -373,27 +389,6 @@ const Pay = ({ navigation }) => {
           </SubTitView>
 
           <PayView>
-            {/* <PayTextView>
-              <PayTitText>1년</PayTitText>
-
-              <SubPayTitText>무료 체험 7일 이후</SubPayTitText>
-              
-              <PriceView>
-                  <PriceText>￦ 47,000</PriceText>
-                  <SubPriceText>(￦3,916원/월)</SubPriceText>
-              </PriceView>
-            </PayTextView>
-
-            <PayTextView>
-              <PayTitText>1개월</PayTitText>
-
-              <SubPayTitText>무료 체험 3일 이후</SubPayTitText>
-              
-              <PriceView>
-                  <PriceText>￦ 7,900</PriceText>
-              </PriceView>
-            </PayTextView> */}
-
             {products.map(product => (
               <PayTextView activeOpacity={1} key={product.id} active={active === product.id} onPress={() => setActive(product.id)}>
                 <PayTitText>{product.title}</PayTitText>
