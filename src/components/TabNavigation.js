@@ -4,6 +4,7 @@ import Meet from "../Meet";
 import Settings from "../Settings";
 import Home from "../Home";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { color } from "react-native-reanimated";
 
 const TabIcon = ({ name, size, color }) => {
   return <MaterialCommunityIcons name={name} size={size} color={color} />;
@@ -44,7 +45,15 @@ const TabNavigation = () => {
         name="Settings"
         component={Settings}
         options={{
-          headerShown: false,
+          title: 'Setting',
+          headerTitleAlign: 'center',
+          headerStyle: {
+            elevation: 0, // remove shadow on Android
+            shadowOpacity: 0, // remove shadow on iOS
+            borderBottomWidth: 0, // Just in case.
+            backgroundColor: '#0C090A',
+          },
+          headerTintColor: '#fff',
         }}
       />
     </Tab.Navigator>

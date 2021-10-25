@@ -5,17 +5,13 @@ const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
-`;
-
-const StyledText = styled.Text`
-  font-size: 30px;
+  background-color: #0C090A;
 `;
 
 const Settings = () => {
   return (
     <Container>
-      <StyledText>Settings</StyledText>
+
     </Container>
   );
 };
