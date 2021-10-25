@@ -25,6 +25,8 @@ const TabNavigation = () => {
           return TabIcon({ ...props, name });
         },
         tabBarShowLabel: false,
+        tabBarActiveTintColor: "#fff",
+        tabBarStyle: { backgroundColor: "#141212" },
       })}
     >
       <Tab.Screen
@@ -45,15 +47,19 @@ const TabNavigation = () => {
         name="Settings"
         component={Settings}
         options={{
-          title: 'Setting',
-          headerTitleAlign: 'center',
+          title: "Setting",
+          headerTitleAlign: "center",
           headerStyle: {
             elevation: 0, // remove shadow on Android
             shadowOpacity: 0, // remove shadow on iOS
             borderBottomWidth: 0, // Just in case.
-            backgroundColor: '#0C090A',
+            backgroundColor: "#141212",
           },
-          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 32,
+          },
+          headerTintColor: "#fff",
         }}
       />
     </Tab.Navigator>
