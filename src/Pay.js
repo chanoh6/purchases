@@ -214,7 +214,7 @@ function dateAdd(addDay) {
   nowDate.setTime(addDate);
 
   var month = nowDate.getMonth() + 1;
-  var date = nowDate.getDate();
+  var date = nowDate.getDate() - 1;
 
   if (month < 10) {
     month = "0" + month;
@@ -222,6 +222,12 @@ function dateAdd(addDay) {
 
   if (date < 10) {
     date = "0" + date;
+  }
+
+  if (date === '00') {
+    var endDt = new Date(nowDate.getFullYear(), nowDate.getMonth(), 0);
+    month = nowDate.getMonth();
+    date = endDt.getDate();
   }
 
   return month + "/" + date;
@@ -432,7 +438,7 @@ const Pay = ({ navigation }) => {
 
           <InfoText>
             {dateAdd(products[active].day).slice(0, 2)}월{" "}
-            {dateAdd(products[active].day).slice(3, 5) - 1}일 체험 만료 전까지
+            {dateAdd(products[active].day).slice(3, 5)}일 체험 만료 전까지
             언제든 해지할 수 있어요
           </InfoText>
 
