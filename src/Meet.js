@@ -1,4 +1,6 @@
+import { useIsFocused } from "@react-navigation/core";
 import React from "react";
+import { StatusBar } from "react-native";
 import styled from "styled-components";
 
 const Container = styled.View`
@@ -12,9 +14,17 @@ const StyledText = styled.Text`
   font-size: 30px;
 `;
 
+function FocusAwareStatusBar(props) {
+  const isFocused = useIsFocused();
+
+  return isFocused ? <StatusBar {...props} /> : null;
+}
+
 const Meet = () => {
   return (
     <Container>
+      <FocusAwareStatusBar barStyle="dark-content" backgroundColor="#fff" />
+
       <StyledText>Meet</StyledText>
     </Container>
   );

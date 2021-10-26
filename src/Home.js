@@ -1,5 +1,6 @@
+import { useIsFocused } from "@react-navigation/core";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import styled from "styled-components";
 
 const PayOpenBtn = styled.TouchableOpacity`
@@ -12,20 +13,28 @@ const PayOpenBtn = styled.TouchableOpacity`
   border-color: rgba(0, 0, 0, 1);
 `;
 
-const AreaView = styled.View`
+const Container = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
   background-color: #fff;
 `;
 
+function FocusAwareStatusBar(props) {
+  const isFocused = useIsFocused();
+
+  return isFocused ? <StatusBar {...props} /> : null;
+}
+
 const Home = ({ navigation }) => {
   return (
-    <AreaView>
+    <Container>
+      <FocusAwareStatusBar barStyle="dark-content" backgroundColor="#fff" />
+
       <PayOpenBtn onPress={() => navigation.navigate("Pay")}>
         <Text>음악 잠금 해제</Text>
       </PayOpenBtn>
-    </AreaView>
+    </Container>
   );
 };
 

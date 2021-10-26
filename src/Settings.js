@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/core";
 
 const Container = styled.View`
   flex: 1;
@@ -37,9 +38,17 @@ const styles = StyleSheet.create({
   },
 });
 
+function FocusAwareStatusBar(props) {
+  const isFocused = useIsFocused();
+
+  return isFocused ? <StatusBar {...props} /> : null;
+}
+
 const Settings = () => {
   return (
     <Container>
+      <FocusAwareStatusBar barStyle="light-content" backgroundColor="#141212" />
+
       <FlexView>
         <MaterialCommunityIcons name="account" size={24} color="white" />
         <MenuText>내 정보</MenuText>
