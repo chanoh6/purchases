@@ -44,7 +44,7 @@ function FocusAwareStatusBar(props) {
   return isFocused ? <StatusBar {...props} /> : null;
 }
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   return (
     <Container>
       <FocusAwareStatusBar barStyle="light-content" backgroundColor="#141212" />
@@ -57,6 +57,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('User')}
         />
       </FlexView>
 
@@ -72,6 +73,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Subscribe')}
         />
       </FlexView>
 
@@ -83,6 +85,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Notification')}
         />
       </FlexView>
 
@@ -94,6 +97,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Qna')}
         />
       </FlexView>
 
@@ -105,6 +109,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Faq')}
         />
       </FlexView>
 
@@ -116,6 +121,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Notice')}
         />
       </FlexView>
 
@@ -131,6 +137,7 @@ const Settings = () => {
           size={30}
           color="white"
           style={styles.arrowIcon}
+          onPress={() => navigation.navigate('Version')}
         />
       </FlexView>
     </Container>
