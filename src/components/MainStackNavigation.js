@@ -1,14 +1,14 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Pay from "../Pay";
+import User from "../setting/User"
+import Subscribe from "../setting/Subscribe"
+import Notification from "../setting/Notification"
+import Qna from "../setting/Qna"
+import Faq from "../setting/Faq"
+import Notice from "../setting/Notice"
+import Version from "../setting/Version"
 import TabNavigation from "./TabNavigation";
-import User from "../User";
-import Subscribe from "../Subscribe";
-import Notification from "../Notification";
-import Qna from "../Qna";
-import Faq from "../Faq";
-import Notice from "../Notice";
-import Version from "../Version";
 
 const Stack = createStackNavigator();
 
@@ -82,6 +82,19 @@ const MainStackNavigation = () => {
 
             return { cardStyle: { opacity, transform: [{ translateX }] } };
           },
+          title: "알림 설정",
+          headerTitleAlign: "center",
+          headerStyle: {
+            elevation: 0, // remove shadow on Android
+            shadowOpacity: 0, // remove shadow on iOS
+            borderBottomWidth: 0, // Just in case.
+            backgroundColor: "#141212",
+          },
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 24,
+          },
+          headerTintColor: "#fff",
         }}
       />
       <Stack.Screen
